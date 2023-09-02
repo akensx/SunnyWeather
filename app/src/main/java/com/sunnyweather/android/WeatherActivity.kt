@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.sunnyweather.android.databinding.ActivityWeatherBinding
@@ -50,11 +51,20 @@ class WeatherActivity : AppCompatActivity() {
                 Toast.makeText(this, "无法获得天气信息", Toast.LENGTH_SHORT).show()
                 result.exceptionOrNull()?.printStackTrace()
             }
+            binding.swipeRefresh.isRefreshing = false
         })
-
-        viewModel.refreshWeather(viewModel.lng, viewModel.lat)
+        binding.swipeRefresh.setColorSchemeResources(androidx.appcompat.R.color.primary_dark_material_light)
+        refreshWeather()
+        binding.swipeRefresh.setOnRefreshListener { refreshWeather() }
+        binding.now.navBtn.setOnClickListener{
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
     }
 
+    private fun refreshWeather(){
+        viewModel.refreshWeather(viewModel.lng, viewModel.lat)
+        binding.swipeRefresh.isRefreshing = true
+    }
     private fun showWeatherInfo(weather: Weather) {
         binding.now.placeName.text = viewModel.placeName
 
